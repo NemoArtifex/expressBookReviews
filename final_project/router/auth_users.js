@@ -3,7 +3,16 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [{username:"your_username",password:"your_password"}];
+let users = [    
+             {
+               "username": "username1",
+               "password": "pswd1"
+             },
+            {
+               "username":"your_username",
+               "password":"your_password"
+           }
+          ];
 
 //======== CHECK IF USERNAME IS IN SYSTEM  ===========
 const isValid = (username)=>{ //returns boolean
@@ -24,10 +33,16 @@ const isValid = (username)=>{ //returns boolean
 //======AUTHENTICATION   ================
 const authenticatedUser = (username,password)=>{ //returns boolean
 //write code to check if username and password match the one we have in records.
-  return users.some(
-    (user)=>user.username===username && user.password===password
-  );
-};
+  let validusers=users.filter((user)=>{
+    return (user.username===username && user.password===password);
+  });
+  //Return TRUE is any valid user found, otherwise false
+   if (validusers.length>0){
+    return true;
+  }else{
+    return false;
+ }
+}
 //==========LOGIN ===============
 //only registered users can login
 regd_users.post("/login", (req,res) => {
@@ -46,7 +61,7 @@ regd_users.post("/login", (req,res) => {
     //Generate JWT access token
     let accessToken = jwt.sign({
         date: password
-    },'access',{expires: 60*60});
+    },'access',{expiresIn: 60*60});
 
     //Store access token and username in session
     req.session.authorization={
