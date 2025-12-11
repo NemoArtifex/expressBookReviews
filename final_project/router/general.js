@@ -113,6 +113,35 @@ public_users.get('/author/:author',function (req, res) {
     }
 });
 
+//==book details by Author using Async-Await ==================
+public_users.get('/author/:author',async function (req, res) {
+  const url = "./booksdb.js"; // Path to simulated API file
+  const requestedAuthor = req.params.author;
+  try{
+    const response = await axios.get(url); 
+    const books = response.data;
+    const matchingBooks = [];
+    const bookKeys = Object.keys(books);
+    for (const isbn of bookKeys){
+        const bookDetails = books[isbn];
+        if (bookDetails.author.toLowerCase() === requestedAuthor.toLowerCase()) {
+            matchingBooks.push(bookDetails);
+    }
+  }
+  if (matchingBooks.length > 0) {
+    return res.status(200).json(matchingBooks);
+} else {
+    return res.status(404).json({ message: `No books found for author: ${requestedAuthor}` });
+}
+}catch (error) {
+    // Error handling for the Axios request
+    return res.status(500).json({ 
+        message: "Error fetching book data", 
+        error: error.message 
+    });
+}
+});
+
 // ========  Get all books based on title  ============
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
@@ -145,6 +174,35 @@ public_users.get('/title/:title',function (req, res) {
   
 
 });
+
+//=====get book details by title with Async-Await ===========
+public_users.get('/title/:title', async (req, res) => {
+    const url = "./booksdb.js"; // Path to simulated API file
+    const requestedTitle = req.params.title;
+    try {
+        const response = await axios.get(url);
+        const books = response.data;
+        const matchingBooks = [];
+        const bookKeys = Object.keys(books);
+        for (const isbn of bookKeys) {
+            const bookDetails = books[isbn];
+            if (bookDetails.title.toLowerCase() === requestedTitle.toLowerCase()) {
+                matchingBooks.push(bookDetails);
+            }
+        }
+        if (matchingBooks.length > 0) {
+            return res.status(200).json(matchingBooks);
+        } else {
+            return res.status(404).json({ message: `No books found for title: ${requestedTitle}` });
+        }
+    } catch (error) {
+        // 5. Handle errors (e.g., if the simulated API is down)
+        return res.status(500).json({ message: "Error fetching books data", error: error.message });
+    }
+});
+
+
+
 
 // =========  Get book review  ============
 public_users.get('/review/:isbn',function (req, res) {
