@@ -4,7 +4,7 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-//========  REGISTRATION ==========
+//========  REGISTRATION ===========
 public_users.post("/register", (req,res) => {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
@@ -115,23 +115,15 @@ public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
 
-  // Extract the ISBN from the request parameters
-  const isbn = req.params.isbn;
-
-  // Look up the specific book using the ISBN key in your 'books' database
-  const bookDetails = books[isbn];
-
-  // Check if the book actually exists before trying to access its reviews
-  if (bookDetails) {
-    //Extract the 'reviews' object specifically from that book's details
-    const bookReviews = bookDetails.reviews;
-
-    return res.json(bookReviewDetails);
-  }else{
-   // If the ISBN doesn't match any book in the database
-   return res.status(404).json({ message: "Book not found for the provided ISBN." });
-}
-});
-
+    //==
+    let isbn = req.params.isbn;
+    if(books[isbn]){
+      return res.status(200).send(JSON.stringify(books[isbn].reviews,null,4));
+    }
+    else{
+      return res.status(404).send("No book found with ISBN "+isbn);
+    }
+  });
+    //=====
 
 module.exports.general = public_users;

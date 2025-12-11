@@ -14,7 +14,7 @@ let users = [
            }
           ];
 
-//======== CHECK IF USERNAME IS IN SYSTEM  ===========
+//======== CHECK IF USERNAME IS IN SYSTEM  ============
 const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
     //Check if a user with a given username already exists
@@ -60,7 +60,7 @@ regd_users.post("/login", (req,res) => {
   if (authenticatedUser(username,password)){
     //Generate JWT access token
     let accessToken = jwt.sign({
-        date: password
+        data: password
     },'access',{expiresIn: 60*60});
 
     //Store access token and username in session
@@ -71,8 +71,7 @@ regd_users.post("/login", (req,res) => {
    }else{
     return res.status(208).json({message:"Invalid Login. Check username and password"})
     }});
-  //}
-//});
+ 
 
 //===== Add a book review ======
 regd_users.put("/auth/review/:isbn", (req, res) => {
