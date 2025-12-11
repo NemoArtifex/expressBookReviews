@@ -3,6 +3,7 @@ let books = require("./booksdb.js");
 let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
+const axios = require('axios');
 
 //========  REGISTRATION ===========
 public_users.post("/register", (req,res) => {
@@ -27,12 +28,28 @@ public_users.post("/register", (req,res) => {
 });
 
 //========= Get the book list available in the shop  =========
-public_users.get('/',function (req, res) {
+//public_users.get('/',function (req, res) {
   //Write your code here
   //return res.status(300).json({message: "Yet to be implemented"});
   //ROUTER function
-  res.send(JSON.stringify(books,null,4));
+
+ // res.send(JSON.stringify(books,null,4));
+//});
+
+
+// GET Book list using Async-Await ======
+public_users.get('/', async function (req, res) {
+    const url = "./booksdb.js"; // Path to simulated API file
+    try {
+        // Code execution pauses here until the Axios request resolves
+        const response = await axios.get(url);
+        res.send(JSON.stringify(response.data, null, 4));
+    } catch (error) {
+        // Error handling for rejected promises
+        res.status(500).json({ message: "Error fetching simulated data", error: error.message });
+    }
 });
+//========
 
 //======== Get book details based on ISBN  ===========
 public_users.get('/isbn/:isbn',function (req, res) {
@@ -44,8 +61,27 @@ public_users.get('/isbn/:isbn',function (req, res) {
   // Note: The keys in `books` object are numbers, so standard object access works.
   const bookDetails = books[isbn];
   return res.json(bookDetails);
+});
+
+
+ //=====GET Book Details by ISBN using Async-Await ====
+ public_users.get('/isbn/:isbn',async function (req, res) {
+    const url = "./booksdb.js"; // Path to simulated API file
+    const isbn = req.params.isbn;
+    try{
+        const response = await axios.get(url); 
+        const booksdata = response.data;
+        const bookDetails = booksdata[isbn];
+        if (bookDetails){
+            return res.status(200).json(bookDetails);
+        }else{
+            return res.status(404).json({message: "Book not found"});
+        }
+    }catch(error){
+        return res.status(500).json({ message: "Error fetching book details", error: error.message });
+    } 
  });
-  
+ 
 // ========= Get book details based on author =============
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
