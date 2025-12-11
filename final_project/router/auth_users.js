@@ -3,28 +3,32 @@ const jwt = require('jsonwebtoken');
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
-let users = [];
+let users = [{username:"your_username",password:"your_password"}];
 
+//======== CHECK IF USERNAME IS IN SYSTEM  ===========
 const isValid = (username)=>{ //returns boolean
 //write code to check is the username is valid
-
+    //Check if a user with a given username already exists
+    //Filter the users array for any user with the same username
+    let userswithsamename=users.filter((user)=>{
+        return user.username===username;
+    });
+    //Return true if any user with the same username is found, otherwise false
+    if(userswithsamename.length>0){
+        return true;
+    }else{
+        return false;
+    }
 }
 
-
-
+//======AUTHENTICATION   ================
 const authenticatedUser = (username,password)=>{ //returns boolean
 //write code to check if username and password match the one we have in records.
-//Filter the users array for any user with the same username an password
-let validusers=users.filter((use)=>{
-    return(users.username===username && users.password===password);
-});
-if(validusers.length>0){
-    return true;
-}else{
-    return false;
-}
-}
-
+  return users.some(
+    (user)=>user.username===username && user.password===password
+  );
+};
+//==========LOGIN ===============
 //only registered users can login
 regd_users.post("/login", (req,res) => {
   //Write your code here
@@ -55,7 +59,7 @@ regd_users.post("/login", (req,res) => {
   //}
 //});
 
-// Add a book review
+//===== Add a book review ======
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   return res.status(300).json({message: "Yet to be implemented"});
